@@ -8,6 +8,7 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.0'
 }
 
 repositories {
@@ -36,6 +37,25 @@ java {
 application {
     // Define the main class for the application.
     mainClass = 'com.jrxna.mongoose.App'
+}
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'com.jrxna.mongoose.App'
+        )
+    }
+}
+
+shadowJar {
+    archiveBaseName.set('app')
+    archiveClassifier.set('')
+    archiveVersion.set('')
+    manifest {
+        attributes(
+            'Main-Class': 'com.jrxna.mongoose.App'
+        )
+    }
 }
 
 tasks.named('test') {

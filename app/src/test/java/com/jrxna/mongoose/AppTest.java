@@ -6,8 +6,6 @@ package com.jrxna.mongoose;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.jrxna.mongoose.App;
-
 class AppTest {
     @Test void appHasAGreeting() {
         App classUnderTest = new App();

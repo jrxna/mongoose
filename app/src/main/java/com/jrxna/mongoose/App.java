@@ -15,48 +15,57 @@ public class App {
 
     public static void main(String[] args) throws IOException {
         if (args.length != 1) {
-            System.err.println("Usage: java MarkdownToHtmlConverter <input-folder>");
+            System.err.println("Usage Error.");
             System.exit(1);
         }
 
         Path inputDir = Paths.get(args[0]);
         Path contentDir = inputDir.resolve("content");
-        Path outputDir = contentDir; // Output in the same directory
 
         if (!Files.exists(contentDir) || !Files.isDirectory(contentDir)) {
             System.err.println("Content directory does not exist or is not a directory.");
             System.exit(1);
         }
 
-        processMarkdownFiles(contentDir, outputDir);
+        processMarkdownFiles(contentDir, inputDir);
+
+        System.out.println("Mongoose task complete. Your website is generated.");
     }
 
     private static void processMarkdownFiles(Path contentDir, Path outputDir) throws IOException {
+        // Create the necessary output directories
+        Files.createDirectories(outputDir);
+    
         // Process home/index.md
         Path homeDir = contentDir.resolve("home");
-        processMarkdownFile(homeDir.resolve("home.md"), outputDir.resolve("index.html"));
-
+        Path homeOutputFile = outputDir.resolve("index.html");
+        processMarkdownFile(homeDir.resolve("home.md"), homeOutputFile);
+        
         // Process about/about.md
         Path aboutDir = contentDir.resolve("about");
-        processMarkdownFile(aboutDir.resolve("about.md"), outputDir.resolve("about.html"));
-
+        Path aboutOutputFile = outputDir.resolve("about.html");
+        processMarkdownFile(aboutDir.resolve("about.md"), aboutOutputFile);
+        
         // Process blog/*.md
         Path blogDir = contentDir.resolve("blog");
+        Path blogOutputDir = outputDir.resolve("articles");
+        Files.createDirectories(blogOutputDir);
+        
         try (Stream<Path> paths = Files.walk(blogDir)) {
             paths.filter(Files::isRegularFile)
-                    .filter(p -> p.toString().endsWith(".md"))
-                    .forEach(p -> {
-                        try {
-                            String fileName = p.getFileName().toString().replace(".md", ".html");
-                            Path outputFile = outputDir.resolve("blog").resolve(fileName);
-                            processMarkdownFile(p, outputFile);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
+                 .filter(p -> p.toString().endsWith(".md"))
+                 .forEach(p -> {
+                     try {
+                         String fileName = p.getFileName().toString().replace(".md", ".html");
+                         Path outputFile = blogOutputDir.resolve(fileName);
+                         processMarkdownFile(p, outputFile);
+                     } catch (IOException e) {
+                         e.printStackTrace();
+                     }
+                 });
         }
-
-        // Copy CSS file
+        
+        // Copy CSS file from resources to the output directory
         try (InputStream is = App.class.getResourceAsStream("/styles.css")) {
             if (is == null) {
                 throw new IOException("Resource not found: /styles.css");

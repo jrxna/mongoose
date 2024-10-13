@@ -42,6 +42,15 @@ public class MongooseApplication implements CommandLineRunner {
         Parser parser = Parser.builder(options).build();
         HtmlRenderer renderer = HtmlRenderer.builder(options).build();
 
+        // Prepare HTML templates
+        String templateFolderPath = "static-site-template";
+        Path templatePath = Paths.get(templateFolderPath);
+
+        // Define the output directory path
+        String outputFolderPath = "output";
+        Path outputPath = Paths.get(outputFolderPath);
+        Files.createDirectories(outputPath);
+
         // Read and parse about.md
         Path aboutMdPath = inputPath.resolve("about.md");
         String aboutContent = "";
@@ -88,6 +97,9 @@ public class MongooseApplication implements CommandLineRunner {
         projectsHtmlBuilder.append("</ul>");
         String projectsLinksHtml = projectsHtmlBuilder.toString();
 
+        // Read the projects.html template
+        String projectsHtmlTemplate = new String(Files.readAllBytes(templatePath.resolve("projects.html")));
+
         // Replace {{projects}} placeholder in projects.html template
         String projectsHtmlOutput = projectsHtmlTemplate.replace("{{projects}}", projectsLinksHtml);
 
@@ -121,12 +133,8 @@ public class MongooseApplication implements CommandLineRunner {
             System.out.println("posts directory not found or is not a directory.");
         }
 
-        // Prepare HTML templates
-        String templateFolderPath = "static-site-template";
-        Path templatePath = Paths.get(templateFolderPath);
-
+        // Read other HTML templates
         String indexHtmlTemplate = new String(Files.readAllBytes(templatePath.resolve("index.html")));
-        String projectsHtmlTemplate = new String(Files.readAllBytes(templatePath.resolve("projects.html")));
         String blogHtmlTemplate = new String(Files.readAllBytes(templatePath.resolve("blog.html")));
 
         // Replace placeholders with content
@@ -150,12 +158,7 @@ public class MongooseApplication implements CommandLineRunner {
         String blogHtmlOutput = blogHtmlTemplate.replace("{{posts}}", postsLinksHtml);
 
         // Write output files
-        String outputFolderPath = "output";
-        Path outputPath = Paths.get(outputFolderPath);
-        Files.createDirectories(outputPath);
-
         Files.write(outputPath.resolve("index.html"), indexHtmlOutput.getBytes());
-        Files.write(outputPath.resolve("projects.html"), projectsHtmlOutput.getBytes());
         Files.write(outputPath.resolve("blog.html"), blogHtmlOutput.getBytes());
 
         // Copy static assets
@@ -238,21 +241,23 @@ public class MongooseApplication implements CommandLineRunner {
     }
 
     private static void copyFolder(Path source, Path target) throws IOException {
-        Files.walkFileTree(source, new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                Path targetDir = target.resolve(source.relativize(dir));
-                if (!Files.exists(targetDir)) {
-                    Files.createDirectory(targetDir);
+        if (Files.exists(source)) {
+            Files.walkFileTree(source, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                    Path targetDir = target.resolve(source.relativize(dir));
+                    if (!Files.exists(targetDir)) {
+                        Files.createDirectory(targetDir);
+                    }
+                    return FileVisitResult.CONTINUE;
                 }
-                return FileVisitResult.CONTINUE;
-            }
 
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                Files.copy(file, target.resolve(source.relativize(file)), StandardCopyOption.REPLACE_EXISTING);
-                return FileVisitResult.CONTINUE;
-            }
-        });
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Files.copy(file, target.resolve(source.relativize(file)), StandardCopyOption.REPLACE_EXISTING);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        }
     }
 }

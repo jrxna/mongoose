@@ -24,18 +24,21 @@ public class MongooseApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Step 1: Get input folder path
-        if (args.length == 0) {
-            System.out.println("Please provide the input folder path.");
+        // Step 1: Get input and output folder paths
+        if (args.length < 2) {
+            System.out.println("Please provide the input and output folder paths.");
             System.exit(1);
         }
         String inputFolderPath = args[0];
+        String outputFolderPath = args[1];
         Path inputPath = Paths.get(inputFolderPath);
+        Path outputPath = Paths.get(outputFolderPath);
 
         if (!Files.exists(inputPath) || !Files.isDirectory(inputPath)) {
             System.out.println("The provided input path is not a valid directory.");
             System.exit(1);
         }
+        Files.createDirectories(outputPath);
 
         // Initialize Markdown parser
         MutableDataSet options = new MutableDataSet();
@@ -47,8 +50,6 @@ public class MongooseApplication implements CommandLineRunner {
         Path templatePath = Paths.get(templateFolderPath);
 
         // Define the output directory path
-        String outputFolderPath = "output";
-        Path outputPath = Paths.get(outputFolderPath);
         Files.createDirectories(outputPath);
 
         // Read and parse about.md

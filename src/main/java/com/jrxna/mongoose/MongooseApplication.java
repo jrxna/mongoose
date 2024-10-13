@@ -12,6 +12,8 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @SpringBootApplication
 public class MongooseApplication implements CommandLineRunner {
@@ -59,8 +61,38 @@ public class MongooseApplication implements CommandLineRunner {
         } else {
             System.out.println("projects.md not found in the input folder.");
         }
-        Node projectsDocument = parser.parse(projectsContent);
-        String projectsHtml = renderer.render(projectsDocument);
+
+        // Parse projects.md to extract links
+        List<Map<String, String>> projectLinks = new ArrayList<>();
+        Pattern linkPattern = Pattern.compile("\\[([^\\]]+)\\]\\(([^\\)]+)\\)");
+        Matcher matcher = linkPattern.matcher(projectsContent);
+        while (matcher.find()) {
+            String projectName = matcher.group(1);
+            String projectUrl = matcher.group(2);
+            Map<String, String> projectData = new HashMap<>();
+            projectData.put("name", projectName);
+            projectData.put("url", projectUrl);
+            projectLinks.add(projectData);
+        }
+
+        // Generate HTML list of projects
+        StringBuilder projectsHtmlBuilder = new StringBuilder();
+        projectsHtmlBuilder.append("<ul>\n");
+        for (Map<String, String> project : projectLinks) {
+            projectsHtmlBuilder.append("  <li><a href=\"")
+                    .append(project.get("url"))
+                    .append("\" target=\"_blank\">")
+                    .append(project.get("name"))
+                    .append("</a></li>\n");
+        }
+        projectsHtmlBuilder.append("</ul>");
+        String projectsLinksHtml = projectsHtmlBuilder.toString();
+
+        // Replace {{projects}} placeholder in projects.html template
+        String projectsHtmlOutput = projectsHtmlTemplate.replace("{{projects}}", projectsLinksHtml);
+
+        // Write projects.html to the output directory
+        Files.write(outputPath.resolve("projects.html"), projectsHtmlOutput.getBytes());
 
         // Read and parse posts
         Path postsFolderPath = inputPath.resolve("posts");
@@ -99,7 +131,6 @@ public class MongooseApplication implements CommandLineRunner {
 
         // Replace placeholders with content
         String indexHtmlOutput = indexHtmlTemplate.replace("{{content}}", aboutHtml);
-        String projectsHtmlOutput = projectsHtmlTemplate.replace("{{content}}", projectsHtml);
 
         // Generate posts links for blog.html
         StringBuilder postsLinksBuilder = new StringBuilder();
@@ -139,8 +170,38 @@ public class MongooseApplication implements CommandLineRunner {
             String postHtmlContent = postData.get("htmlContent");
 
             // Use the blog.html template for post pages
-            String postTemplate = new String(Files.readAllBytes(templatePath.resolve("blog.html")));
-            String postHtmlOutput = postTemplate.replace("{{posts}}", postHtmlContent);
+            String postTemplate = "<!DOCTYPE html>\n"
+                    + "<html lang=\"en\">\n"
+                    + "<head>\n"
+                    + "    <meta charset=\"UTF-8\">\n"
+                    + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
+                    + "    <title>" + postData.get("title") + "</title>\n"
+                    + "    <link rel=\"stylesheet\" href=\"../styles.css\">\n"
+                    + "</head>\n"
+                    + "<body>\n"
+                    + "    <!-- Header -->\n"
+                    + "    <header class=\"header\">\n"
+                    + "        <a href=\"../index.html\">\n"
+                    + "            <img src=\"../images/JRXNA.png\" alt=\"Website Logo\" class=\"logo\">\n"
+                    + "        </a>\n"
+                    + "    </header>\n"
+                    + "    <!-- Navigation Bar -->\n"
+                    + "    <nav class=\"navbar\">\n"
+                    + "        <a href=\"../index.html\">About</a>\n"
+                    + "        <a href=\"../blog.html\">Blog</a>\n"
+                    + "        <a href=\"../projects.html\">Projects</a>\n"
+                    + "    </nav>\n"
+                    + "    <main class=\"content\">\n"
+                    + "        {{content}}\n"
+                    + "    </main>\n"
+                    + "    <!-- Footer -->\n"
+                    + "    <footer class=\"footer\">\n"
+                    + "        <p>&copy; Joel Rego</p>\n"
+                    + "    </footer>\n"
+                    + "</body>\n"
+                    + "</html>";
+
+            String postHtmlOutput = postTemplate.replace("{{content}}", postHtmlContent);
 
             Path postOutputPath = outputPostsPath.resolve(postFileName);
             Files.write(postOutputPath, postHtmlOutput.getBytes());
@@ -168,7 +229,7 @@ public class MongooseApplication implements CommandLineRunner {
         Files.copy(sourceStylesPath, targetStylesPath, StandardCopyOption.REPLACE_EXISTING);
 
         // Copy asset directories
-        String[] assetFolders = {"fonts", "images"};
+        String[] assetFolders = { "fonts", "images" };
         for (String folderName : assetFolders) {
             Path sourceFolder = templatePath.resolve(folderName);
             Path targetFolder = outputPath.resolve(folderName);
@@ -186,6 +247,7 @@ public class MongooseApplication implements CommandLineRunner {
                 }
                 return FileVisitResult.CONTINUE;
             }
+
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 Files.copy(file, target.resolve(source.relativize(file)), StandardCopyOption.REPLACE_EXISTING);

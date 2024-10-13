@@ -1,0 +1,146 @@
+/* --- General CSS Variables --- */
+
+@font-face {
+    font-family: 'Book'; 
+    src: url('fonts/Book.woff2') format('woff2'); /* Correct path to your font file */
+}
+
+/* 1C stands for a multiple of 8px, so 1C = 8px, 2C = 16px, etc. */
+:root {
+    --spacing-unit: 8px;
+    --bg-color: #000;
+    --text-color: white;
+    --font-size: 20px; /* Increased font size from 16px to 18px */
+    --max-width: 700px; /* Adjusted max width for better responsiveness */
+}
+
+
+/* Set default background and text color, apply custom font, and limit max-width */
+body {
+    font-family: 'Book';
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-size: var(--font-size);
+    padding: calc(5 * var(--spacing-unit));
+    max-width: var(--max-width);
+    margin: 0 auto;
+}
+
+/* Full width on smaller screens */
+@media (max-width: 768px) {
+    body {
+        max-width: 100%; /* Full width on small screens */
+        padding: calc(3 * var(--spacing-unit)); /* Adjust padding for smaller screens */
+    }
+}
+
+/* Further adjustments for very small screens (phones) */
+@media (max-width: 500px) {
+    body {
+        max-width: 100%; /* Full width */
+        font-size: calc(1.1 * var(--font-size)); /* Slightly increase font size for readability */
+        padding: calc(2 * var(--spacing-unit)); /* Smaller padding on phones */
+    }
+}
+
+/* --- Header Styles --- */
+
+/* Center header, left-align image and subheading */
+.header {
+    text-align: left;
+    margin-bottom: calc(3 * var(--spacing-unit));
+}
+
+/* Logo image styling */
+.logo {
+    width: 100%;
+    max-width: 300px; /* Set max-width for responsiveness */
+    height: auto;
+    margin-bottom: var(--spacing-unit);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Book'; 
+}
+
+/* --- Navigation Bar --- */
+
+/* Simple horizontal navigation bar, links spaced equally */
+.navbar {
+    display: flex;
+    justify-content: flex-start;
+    gap: calc(2 * var(--spacing-unit)); /* Space between links */
+    padding: var(--spacing-unit) 0;
+    flex-wrap: wrap; /* Wrap nav items for small screens */
+}
+
+/* Style individual nav links */
+.navbar a {
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+/* --- Main Content Styles --- */
+
+/* Content section for all pages */
+.content {
+    padding: calc(2 * var(--spacing-unit)) 0;
+}
+
+/* --- Page-specific Styles (for Resume page) --- */
+
+/* Resume page with two columns */
+.resume {
+    display: flex;
+    gap: calc(2 * var(--spacing-unit)); /* Space between columns */
+    flex-wrap: wrap; /* Ensure columns wrap on small screens */
+}
+
+.resume-left, .resume-right {
+    width: 100%; /* Full width on small screens */
+}
+
+@media (min-width: 768px) {
+    .resume-left {
+        width: 30%; /* Left column width on larger screens */
+    }
+
+    .resume-right {
+        width: 70%; /* Right column width on larger screens */
+    }
+}
+
+/* Ensure all paragraphs have consistent spacing */
+p {
+    line-height: 1.8;
+}
+
+/* --- Miscellaneous --- */
+
+/* Make images responsive */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+a {
+    color: #FFFFFF; 
+}
+
+/* Links should change color when hovered for better UX */
+a:hover {
+    color: #999999; /* Light gray color on hover */
+}
+
+/* Remove padding and margin for the unordered list and list items */
+.list ul {
+    padding-left: 0;
+    margin-left: 0;
+    list-style-position: inside; /* Ensures the bullets align with text */
+}
+
+/* Ensure list items align with the paragraph text */
+.list ul li {
+    margin-bottom: calc(1.5 * var(--spacing-unit));
+    padding-left: 0;
+}

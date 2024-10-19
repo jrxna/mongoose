@@ -133,15 +133,13 @@ a:hover {
     color: #999999; /* Light gray color on hover */
 }
 
-/* Remove padding and margin for the unordered list and list items */
-.list ul {
+ul {
     padding-left: 0;
     margin-left: 0;
     list-style-position: inside; /* Ensures the bullets align with text */
 }
 
-/* Ensure list items align with the paragraph text */
-.list ul li {
+ul li {
     margin-bottom: calc(1.5 * var(--spacing-unit));
     padding-left: 0;
 }

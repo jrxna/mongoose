@@ -72,20 +72,22 @@ public class MongooseApplication implements CommandLineRunner {
             System.out.println("projects.md not found in the input folder.");
         }
 
-        // Parse projects.md to extract links
+        // Parse projects.md to extract links and descriptions
         List<Map<String, String>> projectLinks = new ArrayList<>();
-        Pattern linkPattern = Pattern.compile("\\[([^\\]]+)\\]\\(([^\\)]+)\\)");
+        Pattern linkPattern = Pattern.compile("\\[([^\\]]+)\\]\\(([^\\)]+)\\)(?::\\s*(.*))?");
         Matcher matcher = linkPattern.matcher(projectsContent);
         while (matcher.find()) {
             String projectName = matcher.group(1);
             String projectUrl = matcher.group(2);
+            String projectDescription = matcher.group(3) != null ? matcher.group(3) : "";
             Map<String, String> projectData = new HashMap<>();
             projectData.put("name", projectName);
             projectData.put("url", projectUrl);
+            projectData.put("description", projectDescription);
             projectLinks.add(projectData);
         }
 
-        // Generate HTML list of projects
+        // Generate HTML list of projects with descriptions
         StringBuilder projectsHtmlBuilder = new StringBuilder();
         projectsHtmlBuilder.append("<ul>\n");
         for (Map<String, String> project : projectLinks) {
@@ -93,7 +95,11 @@ public class MongooseApplication implements CommandLineRunner {
                     .append(project.get("url"))
                     .append("\" target=\"_blank\">")
                     .append(project.get("name"))
-                    .append("</a></li>\n");
+                    .append("</a>");
+            if (!project.get("description").isEmpty()) {
+                projectsHtmlBuilder.append(": ").append(project.get("description"));
+            }
+            projectsHtmlBuilder.append("</li>\n");
         }
         projectsHtmlBuilder.append("</ul>");
         String projectsLinksHtml = projectsHtmlBuilder.toString();

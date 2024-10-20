@@ -1,8 +1,8 @@
 /* --- General CSS Variables --- */
 
 @font-face {
-    font-family: 'Book'; 
-    src: url('fonts/Book.ttf') format('truetype'); /* Correct path to your font file */
+    font-family: 'Aptos'; 
+    src: url('fonts/Aptos.ttf') format('truetype'); /* Correct path to your font file */
 }
 
 /* 1C stands for a multiple of 8px, so 1C = 8px, 2C = 16px, etc. */
@@ -17,7 +17,7 @@
 
 /* Set default background and text color, apply custom font, and limit max-width */
 body {
-    font-family: 'Book';
+    font-family: 'Aptos';
     background-color: var(--bg-color);
     color: var(--text-color);
     font-size: var(--font-size);
@@ -60,7 +60,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Book'; 
+    font-family: 'Aptos'; 
     font-weight: normal;
 }
 
@@ -111,11 +111,6 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
-/* Ensure all paragraphs have consistent spacing */
-p {
-    line-height: 1.8;
-}
-
 /* --- Miscellaneous --- */
 
 /* Make images responsive */
@@ -136,8 +131,4 @@ a:hover {
 ul {
     padding-left: calc(2 * var(--spacing-unit));
     list-style-position: outside; /* Ensures the bullets align with text */
-}
-
-ul li {
-    margin-bottom: calc(1.5 * var(--spacing-unit));
 }

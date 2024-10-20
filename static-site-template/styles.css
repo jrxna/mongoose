@@ -111,11 +111,6 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
-/* Ensure all paragraphs have consistent spacing */
-p {
-    line-height: 1.8;
-}
-
 /* --- Miscellaneous --- */
 
 /* Make images responsive */
@@ -136,8 +131,4 @@ a:hover {
 ul {
     padding-left: calc(2 * var(--spacing-unit));
     list-style-position: outside; /* Ensures the bullets align with text */
-}
-
-ul li {
-    margin-bottom: calc(1.5 * var(--spacing-unit));
 }

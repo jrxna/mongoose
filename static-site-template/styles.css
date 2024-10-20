@@ -134,12 +134,10 @@ a:hover {
 }
 
 ul {
-    padding-left: 0;
-    margin-left: 0;
-    list-style-position: inside; /* Ensures the bullets align with text */
+    padding-left: calc(2 * var(--spacing-unit));
+    list-style-position: outside; /* Ensures the bullets align with text */
 }
 
 ul li {
     margin-bottom: calc(1.5 * var(--spacing-unit));
-    padding-left: 0;
 }

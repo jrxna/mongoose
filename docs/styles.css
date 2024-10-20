@@ -1,0 +1,335 @@
+/* --- General CSS Variables --- */
+
+@font-face {
+    font-family: 'Book';
+    src: url('fonts/Book.ttf') format('truetype');
+}
+
+:root {
+    --spacing-unit: 8px;
+    --bg-color: #000;
+    --text-color: white;
+    --font-size: 18px;
+    --sidebar-width: 250px;
+    --sidebar-bg-color: #0D0D0D;
+    /* Left sidebar background */
+    --content-bg-color: #000;
+    /* Background color of main content */
+}
+
+/* Reset default margins and paddings */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* General Styles */
+
+body {
+    font-family: 'Book', Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    min-height: 100vh;
+    /* Removed overflow: hidden; to allow scrolling */
+}
+
+/* Mobile Toggle Styles */
+
+.nav-toggle {
+    display: none;
+}
+
+.toggle-button {
+    display: none;
+    /* Hidden on desktop */
+    position: fixed;
+    top: calc(1 * var(--spacing-unit));
+    left: calc(1 * var(--spacing-unit));
+    background-color: var(--sidebar-bg-color);
+    border: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1001;
+    align-items: center;
+    justify-content: center;
+    /* Removed display: flex; here to prevent it from overriding display: none; */
+}
+
+.toggle-icon {
+    position: relative;
+    width: 24px;
+    height: 2px;
+    background-color: var(--text-color);
+    display: inline-block;
+    transition: all 0.3s ease-in-out;
+}
+
+.toggle-icon::before,
+.toggle-icon::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 24px;
+    height: 2px;
+    background-color: var(--text-color);
+    transition: all 0.3s ease-in-out;
+}
+
+.toggle-icon::before {
+    top: -8px;
+}
+
+.toggle-icon::after {
+    top: 8px;
+}
+
+/* Transform to 'X' when checked */
+
+.nav-toggle:checked+.toggle-button .toggle-icon {
+    background-color: transparent;
+}
+
+.nav-toggle:checked+.toggle-button .toggle-icon::before {
+    transform: rotate(45deg);
+    top: 0;
+}
+
+.nav-toggle:checked+.toggle-button .toggle-icon::after {
+    transform: rotate(-45deg);
+    top: 0;
+}
+
+/* Left Sidebar Styles */
+
+.sidebar-left {
+    width: var(--sidebar-width);
+    background-color: var(--sidebar-bg-color);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+.sidebar-left:hover {
+    overflow-y: auto;
+}
+
+.sidebar-header {
+    padding: calc(4 * var(--spacing-unit)) calc(2 * var(--spacing-unit)) calc(2 * var(--spacing-unit));
+}
+
+.logo {
+    max-width: 75%;
+    height: auto;
+}
+
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: calc(1 * var(--spacing-unit));
+}
+
+.sidebar-nav {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.sidebar-nav li {
+    margin: calc(1 * var(--spacing-unit));
+}
+
+.sidebar-nav a {
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+.sidebar-nav a:hover {
+    color: #999999;
+}
+
+.sidebar-nav ul {
+    list-style-type: none;
+    padding-left: calc(1 * var(--spacing-unit));
+}
+
+/* Sidebar Footer */
+
+.sidebar-footer {
+    padding: calc(2 * var(--spacing-unit));
+    font-size: 14px;
+}
+
+/* Right Sidebar Styles */
+
+.sidebar-right {
+    width: var(--sidebar-width);
+    background-color: var(--content-bg-color);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+.sidebar-right:hover {
+    overflow-y: auto;
+}
+
+.sidebar-right .sidebar-content {
+    padding: calc(2 * var(--spacing-unit));
+}
+
+.sidebar-right .sidebar-nav {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.sidebar-right .sidebar-nav li {
+    margin-bottom: calc(1 * var(--spacing-unit));
+}
+
+.sidebar-right .sidebar-nav a {
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+.sidebar-right .sidebar-nav a:hover {
+    color: #999999;
+}
+
+/* Content Styles */
+
+.content {
+    flex: 1;
+    padding: calc(3 * var(--spacing-unit));
+    margin-left: var(--sidebar-width);
+    margin-right: var(--sidebar-width);
+    background-color: var(--content-bg-color);
+    overflow-y: auto;
+    /* Ensure content area can scroll */
+}
+
+.content h1,
+.content h2,
+.content h3,
+.content h4,
+.content h5,
+.content h6 {
+    font-family: 'Book';
+    font-weight: normal;
+    margin-top: calc(2 * var(--spacing-unit));
+    margin-bottom: calc(1 * var(--spacing-unit));
+    color: var(--text-color);
+}
+
+.content p {
+    line-height: 1.8;
+    margin-bottom: calc(1.5 * var(--spacing-unit));
+}
+
+.content a {
+    color: var(--text-color);
+    text-decoration: underline;
+}
+
+.content a:hover {
+    color: #999999;
+}
+
+.content img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Code Blocks */
+
+.content pre {
+    background-color: #111;
+    padding: calc(1 * var(--spacing-unit));
+    overflow-x: auto;
+}
+
+/* Lists */
+
+.content ul,
+.content ol {
+    padding-left: calc(2 * var(--spacing-unit));
+    margin-bottom: calc(1.5 * var(--spacing-unit));
+}
+
+.content ul li,
+.content ol li {
+    margin-bottom: calc(0.5 * var(--spacing-unit));
+}
+
+/* Responsive Design */
+
+/* For screens smaller than 768px */
+@media (max-width: 768px) {
+
+    /* Show the toggle button */
+    .toggle-button {
+        display: flex;
+    }
+
+    /* Adjust content margin */
+    .content {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    /* Hide the left sidebar by default */
+    .sidebar-left {
+        transform: translateX(-100%);
+        z-index: 1000;
+    }
+
+    /* Move toggle button when sidebar is open */
+    .nav-toggle:checked+.toggle-button {
+        left: calc(var(--sidebar-width) + var(--spacing-unit));
+    }
+
+
+    /* Show left sidebar when toggle is checked */
+    .nav-toggle:checked+.toggle-button+.sidebar-left {
+        transform: translateX(0);
+        z-index: 1002;
+        /* Increase z-index when sidebar is open */
+    }
+
+
+    /* Hide right sidebar */
+    .sidebar-right {
+        display: none;
+    }
+
+    /* Dark overlay when sidebar is active */
+    .nav-toggle:checked+.toggle-button+.sidebar-left::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: var(--sidebar-width);
+        width: calc(100% - var(--sidebar-width));
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: -1;
+    }
+
+    /* Prevent scrolling when sidebar is active */
+    .nav-toggle:checked~.content {
+        pointer-events: none;
+    }
+
+    /* Allow body to scroll on mobile */
+    body {
+        overflow: auto;
+        flex-direction: column;
+    }
+}

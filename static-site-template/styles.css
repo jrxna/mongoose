@@ -1,23 +1,28 @@
 /* --- General CSS Variables --- */
 
 @font-face {
-    font-family: 'Aptos'; 
-    src: url('fonts/Aptos.ttf') format('truetype'); /* Correct path to your font file */
+    font-family: 'Selawik'; 
+    src: url('fonts/Selawik.ttf') format('truetype'); /* Correct path to your font file */
+}
+
+@font-face {
+    font-family: 'Cascadia'; 
+    src: url('fonts/Cascadia.ttf') format('truetype'); /* Correct path to your font file */
 }
 
 /* 1C stands for a multiple of 8px, so 1C = 8px, 2C = 16px, etc. */
 :root {
     --spacing-unit: 8px;
-    --bg-color: #000;
+    --bg-color: #17181a;
     --text-color: white;
-    --font-size: 20px; /* Increased font size from 16px to 18px */
+    --font-size: 12px; /* Increased font size from 16px to 18px */
     --max-width: 700px; /* Adjusted max width for better responsiveness */
 }
 
 
 /* Set default background and text color, apply custom font, and limit max-width */
 body {
-    font-family: 'Aptos';
+    font-family: 'Selawik';
     background-color: var(--bg-color);
     color: var(--text-color);
     font-size: var(--font-size);
@@ -60,7 +65,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Aptos'; 
+    font-family: 'Selawik'; 
     font-weight: normal;
 }
 
@@ -131,4 +136,8 @@ a:hover {
 ul {
     padding-left: calc(2 * var(--spacing-unit));
     list-style-position: outside; /* Ensures the bullets align with text */
+}
+
+code, pre {
+    font-family: 'Cascadia', monospace;
 }

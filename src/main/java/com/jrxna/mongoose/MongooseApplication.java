@@ -187,6 +187,7 @@ public class MongooseApplication implements CommandLineRunner {
                     + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
                     + "    <title>" + postData.get("title") + "</title>\n"
                     + "    <link rel=\"stylesheet\" href=\"../styles.css\">\n"
+                    + "    <link rel=\"icon\" type=\"image/png\" href=\"../images/JRXNAFavicon.png\">"
                     + "</head>\n"
                     + "<body>\n"
                     + "    <!-- Header -->\n"

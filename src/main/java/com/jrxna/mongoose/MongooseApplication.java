@@ -3,10 +3,17 @@ package com.jrxna.mongoose;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import com.vladsch.flexmark.ast.FencedCodeBlock;
 import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.html.AttributeProvider;
+import com.vladsch.flexmark.html.AttributeProviderFactory;
+import com.vladsch.flexmark.html.renderer.AttributablePart;
+import com.vladsch.flexmark.html.renderer.LinkResolverContext;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.MutableDataSet;
+import com.vladsch.flexmark.util.html.MutableAttributes;
 
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -14,6 +21,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Scanner;
 
 @SpringBootApplication
 public class MongooseApplication implements CommandLineRunner {
@@ -40,17 +48,40 @@ public class MongooseApplication implements CommandLineRunner {
         }
         Files.createDirectories(outputPath);
 
-        // Initialize Markdown parser
+        // Initialize Markdown parser with necessary options
         MutableDataSet options = new MutableDataSet();
+        options.set(HtmlRenderer.FENCED_CODE_LANGUAGE_CLASS_PREFIX, "language-");
+
+        // Initialize the renderer with an attribute provider
+        HtmlRenderer renderer = HtmlRenderer.builder(options)
+            .attributeProviderFactory(new AttributeProviderFactory() {
+                @Override
+                public AttributeProvider apply(LinkResolverContext context) {
+                    return new CustomAttributeProvider();
+                }
+
+                @Override
+                public Set<Class<?>> getAfterDependents() {
+                    return null;
+                }
+
+                @Override
+                public Set<Class<?>> getBeforeDependents() {
+                    return null;
+                }
+
+                @Override
+                public boolean affectsGlobalScope() {
+                    return false;
+                }
+            })
+            .build();
+
         Parser parser = Parser.builder(options).build();
-        HtmlRenderer renderer = HtmlRenderer.builder(options).build();
 
         // Prepare HTML templates
         String templateFolderPath = "static-site-template";
         Path templatePath = Paths.get(templateFolderPath);
-
-        // Define the output directory path
-        Files.createDirectories(outputPath);
 
         // Read and parse about.md
         Path aboutMdPath = inputPath.resolve("about.md");
@@ -179,40 +210,11 @@ public class MongooseApplication implements CommandLineRunner {
             String postFileName = postData.get("fileName");
             String postHtmlContent = postData.get("htmlContent");
 
-            // Use the blog.html template for post pages
-            String postTemplate = "<!DOCTYPE html>\n"
-                    + "<html lang=\"en\">\n"
-                    + "<head>\n"
-                    + "    <meta charset=\"UTF-8\">\n"
-                    + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
-                    + "    <title>" + postData.get("title") + "</title>\n"
-                    + "    <link rel=\"stylesheet\" href=\"../styles.css\">\n"
-                    + "    <link rel=\"icon\" type=\"image/png\" href=\"../images/JRXNAFavicon.png\">"
-                    + "</head>\n"
-                    + "<body>\n"
-                    + "    <!-- Header -->\n"
-                    + "    <header class=\"header\">\n"
-                    + "        <a href=\"../index.html\">\n"
-                    + "            <img src=\"../images/JRXNA.png\" alt=\"Website Logo\" class=\"logo\">\n"
-                    + "        </a>\n"
-                    + "    </header>\n"
-                    + "    <!-- Navigation Bar -->\n"
-                    + "    <nav class=\"navbar\">\n"
-                    + "        <a href=\"../index.html\">About</a>\n"
-                    + "        <a href=\"../blog.html\">Blog</a>\n"
-                    + "        <a href=\"../projects.html\">Projects</a>\n"
-                    + "    </nav>\n"
-                    + "    <main class=\"content\">\n"
-                    + "        {{content}}\n"
-                    + "    </main>\n"
-                    + "    <!-- Footer -->\n"
-                    + "    <footer class=\"footer\">\n"
-                    + "        <p>&copy; Joel Rego</p>\n"
-                    + "    </footer>\n"
-                    + "</body>\n"
-                    + "</html>";
+            // Read the post.html template
+            String postTemplate = new String(Files.readAllBytes(templatePath.resolve("post.html")));
 
-            String postHtmlOutput = postTemplate.replace("{{content}}", postHtmlContent);
+            String postHtmlOutput = postTemplate.replace("{{content}}", postHtmlContent)
+                                                .replace("{{title}}", postData.get("title"));
 
             Path postOutputPath = outputPostsPath.resolve(postFileName);
             Files.write(postOutputPath, postHtmlOutput.getBytes());
@@ -266,6 +268,20 @@ public class MongooseApplication implements CommandLineRunner {
                     return FileVisitResult.CONTINUE;
                 }
             });
+        }
+    }
+
+    // Define the custom attribute provider
+    static class CustomAttributeProvider implements AttributeProvider {
+        @Override
+        public void setAttributes(Node node, AttributablePart part, MutableAttributes attributes) {
+            if (node instanceof FencedCodeBlock) {
+                FencedCodeBlock codeBlock = (FencedCodeBlock) node;
+                // Existing class attribute
+                String existingClass = attributes.getValue("class");
+                if (existingClass == null) existingClass = "";
+                else existingClass += " ";
+            }
         }
     }
 }

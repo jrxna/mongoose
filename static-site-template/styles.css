@@ -84,25 +84,43 @@ h6 {
     gap: calc(2 * var(--spacing-unit));
     padding: var(--spacing-unit) 0;
     flex-wrap: wrap;
-}
-
-/* Navigation buttons: no capitalization, slightly smaller text, no border-radius */
-.navbar a {
-    background-color: #0088FF;
-    color: #fff;
-    padding: calc(1 * var(--spacing-unit)) calc(2 * var(--spacing-unit));
-    /* Removed font-weight: bold; as per request */
-    font-family: 'Selawik';
-    text-decoration: none;
-    display: inline-block;
-    transition: background-color 0.3s ease;
     font-size: 18px;
-    border: none;
-    vertical-align: middle; /* Ensure buttons align well with text */
 }
 
-.navbar a:hover {
-    background-color: #006acc;
+.navbar-link {
+  display: flex;
+  align-items: center;
+  background-color: #0088FF;
+  width: 120px;
+  height: 40px;
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+  transition: 1s ease-in-out;
+}
+
+svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  fill: none;
+  stroke: #fff;
+  stroke-dasharray: 150 480;
+  stroke-dashoffset: 150;
+  transition: 1s ease-in-out;
+}
+
+.navbar-link:hover {
+  transition: 1s ease-in-out;
+  background: #0055DD;
+}
+
+.navbar-link:hover svg {
+  stroke-dashoffset: -480;
+}
+
+.navbar-link span {
+    padding-left: var(--spacing-unit);
 }
 
 /* Links: left-to-right blue background animation on hover

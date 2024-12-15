@@ -6,6 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="310477af-370b-4fe2-8c91-8dd6ef1f4f98" name="Changes" comment="feat: create the summary feature&#10;&#10;- fix the line number issue in the code snippets generated from the markdown file">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static-site-template/blog.html" beforeDir="false" afterPath="$PROJECT_DIR$/static-site-template/blog.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static-site-template/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/static-site-template/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static-site-template/post.html" beforeDir="false" afterPath="$PROJECT_DIR$/static-site-template/post.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static-site-template/projects.html" beforeDir="false" afterPath="$PROJECT_DIR$/static-site-template/projects.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static-site-template/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/static-site-template/styles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -59,17 +63,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "feat/summary",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/jrxna/github/mongoose"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feat/summary&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/jrxna/github/mongoose&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration default="true" type="JetRunConfigurationType">
       <method v="2">
@@ -130,7 +134,15 @@
       <option name="project" value="LOCAL" />
       <updated>1734264137843</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="feat: create the summary feature&#10;&#10;- fix the line number issue in the code snippets generated from the markdown file">
+      <option name="closed" value="true" />
+      <created>1734264287658</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1734264287658</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

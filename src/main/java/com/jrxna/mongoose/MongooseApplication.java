@@ -32,13 +32,16 @@ public class MongooseApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Step 1: Get input and output folder paths
-        if (args.length < 2) {
-            System.out.println("Please provide the input and output folder paths.");
+        // Expecting: java -jar build/libs/mongoose.jar <input_folder> <output_folder> <domain_name>
+        if (args.length < 3) {
+            System.out.println("Usage: java -jar mongoose.jar <input_folder> <output_folder> <domain_name>");
             System.exit(1);
         }
+
         String inputFolderPath = args[0];
         String outputFolderPath = args[1];
+        String domainName = args[2]; // domain should be used in the sitemap and CNAME
+
         Path inputPath = Paths.get(inputFolderPath);
         Path outputPath = Paths.get(outputFolderPath);
 
@@ -48,34 +51,37 @@ public class MongooseApplication implements CommandLineRunner {
         }
         Files.createDirectories(outputPath);
 
+        // Write CNAME file with the domain name
+        Files.write(outputPath.resolve("CNAME"), domainName.getBytes());
+
         // Initialize Markdown parser with necessary options
         MutableDataSet options = new MutableDataSet();
         options.set(HtmlRenderer.FENCED_CODE_LANGUAGE_CLASS_PREFIX, "language-");
 
         // Initialize the renderer with an attribute provider
         HtmlRenderer renderer = HtmlRenderer.builder(options)
-            .attributeProviderFactory(new AttributeProviderFactory() {
-                @Override
-                public AttributeProvider apply(LinkResolverContext context) {
-                    return new CustomAttributeProvider();
-                }
+                .attributeProviderFactory(new AttributeProviderFactory() {
+                    @Override
+                    public AttributeProvider apply(LinkResolverContext context) {
+                        return new CustomAttributeProvider();
+                    }
 
-                @Override
-                public Set<Class<?>> getAfterDependents() {
-                    return null;
-                }
+                    @Override
+                    public Set<Class<?>> getAfterDependents() {
+                        return null;
+                    }
 
-                @Override
-                public Set<Class<?>> getBeforeDependents() {
-                    return null;
-                }
+                    @Override
+                    public Set<Class<?>> getBeforeDependents() {
+                        return null;
+                    }
 
-                @Override
-                public boolean affectsGlobalScope() {
-                    return false;
-                }
-            })
-            .build();
+                    @Override
+                    public boolean affectsGlobalScope() {
+                        return false;
+                    }
+                })
+                .build();
 
         Parser parser = Parser.builder(options).build();
 
@@ -206,6 +212,12 @@ public class MongooseApplication implements CommandLineRunner {
         Path outputPostsPath = outputPath.resolve("posts");
         Files.createDirectories(outputPostsPath);
 
+        // Keep track of all generated pages for sitemap
+        List<String> pages = new ArrayList<>();
+        pages.add("index.html");
+        pages.add("projects.html");
+        pages.add("blog.html");
+
         for (Map<String, String> postData : postsData) {
             String postFileName = postData.get("fileName");
             String postHtmlContent = postData.get("htmlContent");
@@ -214,13 +226,19 @@ public class MongooseApplication implements CommandLineRunner {
             String postTemplate = new String(Files.readAllBytes(templatePath.resolve("post.html")));
 
             String postHtmlOutput = postTemplate.replace("{{content}}", postHtmlContent)
-                                                .replace("{{title}}", postData.get("title"));
+                    .replace("{{title}}", postData.get("title"));
 
             Path postOutputPath = outputPostsPath.resolve(postFileName);
             Files.write(postOutputPath, postHtmlOutput.getBytes());
+
+            // Add each generated post file to pages list
+            pages.add("posts/" + postFileName);
         }
 
-        System.out.println("Site generated successfully.");
+        // After generating all pages, create sitemap.xml using the given domain
+        createSitemap(outputPath, pages, domainName);
+
+        System.out.println("Site generated successfully, including sitemap.xml and CNAME.");
     }
 
     private String extractTitle(String markdownContent) {
@@ -269,6 +287,22 @@ public class MongooseApplication implements CommandLineRunner {
                 }
             });
         }
+    }
+
+    private void createSitemap(Path outputPath, List<String> pages, String domainName) throws IOException {
+        StringBuilder sitemap = new StringBuilder();
+        sitemap.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        sitemap.append("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
+
+        for (String page : pages) {
+            sitemap.append("  <url>\n");
+            sitemap.append("    <loc>").append(domainName).append("/").append(page).append("</loc>\n");
+            sitemap.append("  </url>\n");
+        }
+
+        sitemap.append("</urlset>");
+
+        Files.write(outputPath.resolve("sitemap.xml"), sitemap.toString().getBytes());
     }
 
     // Define the custom attribute provider

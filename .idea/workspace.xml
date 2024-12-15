@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="310477af-370b-4fe2-8c91-8dd6ef1f4f98" name="Changes" comment="feat: make changes to the output static site template and add unversioned files&#10;&#10;- made changes in the default static site templates `styles.css` file&#10;- add background image object that is used in the `styles.css` file" />
+    <list default="true" id="310477af-370b-4fe2-8c91-8dd6ef1f4f98" name="Changes" comment="feat: make changes to the output static site template and add unversioned files&#10;&#10;- made changes in the default static site templates `styles.css` file&#10;- add background image object that is used in the `styles.css` file">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jrxna/mongoose/MongooseApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jrxna/mongoose/MongooseApplication.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -86,7 +89,15 @@
       <option name="project" value="LOCAL" />
       <updated>1734255002440</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="feat: make changes to the output static site template and add unversioned files&#10;&#10;- made changes in the default static site templates `styles.css` file&#10;- add background image object that is used in the `styles.css` file">
+      <option name="closed" value="true" />
+      <created>1734255149670</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1734255149670</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

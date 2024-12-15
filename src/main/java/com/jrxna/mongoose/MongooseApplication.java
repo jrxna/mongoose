@@ -32,7 +32,6 @@ public class MongooseApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Expecting: java -jar build/libs/mongoose.jar <input_folder> <output_folder> <domain_name>
         if (args.length < 3) {
             System.out.println("Usage: java -jar mongoose.jar <input_folder> <output_folder> <domain_name>");
             System.exit(1);
@@ -40,25 +39,21 @@ public class MongooseApplication implements CommandLineRunner {
 
         String inputFolderPath = args[0];
         String outputFolderPath = args[1];
-        String domainName = args[2]; // domain should be used in the sitemap and CNAME
+        String domainName = args[2];
 
         Path inputPath = Paths.get(inputFolderPath);
         Path outputPath = Paths.get(outputFolderPath);
 
         if (!Files.exists(inputPath) || !Files.isDirectory(inputPath)) {
-            System.out.println("The provided input path is not a valid directory.");
+            System.out.println("Invalid input folder.");
             System.exit(1);
         }
         Files.createDirectories(outputPath);
 
-        // Write CNAME file with the domain name
         Files.write(outputPath.resolve("CNAME"), domainName.getBytes());
 
-        // Initialize Markdown parser with necessary options
         MutableDataSet options = new MutableDataSet();
         options.set(HtmlRenderer.FENCED_CODE_LANGUAGE_CLASS_PREFIX, "language-");
-
-        // Initialize the renderer with an attribute provider
         HtmlRenderer renderer = HtmlRenderer.builder(options)
                 .attributeProviderFactory(new AttributeProviderFactory() {
                     @Override
@@ -67,93 +62,56 @@ public class MongooseApplication implements CommandLineRunner {
                     }
 
                     @Override
-                    public Set<Class<?>> getAfterDependents() {
-                        return null;
-                    }
-
+                    public Set<Class<?>> getAfterDependents() { return null; }
                     @Override
-                    public Set<Class<?>> getBeforeDependents() {
-                        return null;
-                    }
-
+                    public Set<Class<?>> getBeforeDependents() { return null; }
                     @Override
-                    public boolean affectsGlobalScope() {
-                        return false;
-                    }
+                    public boolean affectsGlobalScope() { return false; }
                 })
                 .build();
 
         Parser parser = Parser.builder(options).build();
 
-        // Prepare HTML templates
         String templateFolderPath = "static-site-template";
         Path templatePath = Paths.get(templateFolderPath);
 
-        // Read and parse about.md
+        // about.md
         Path aboutMdPath = inputPath.resolve("about.md");
-        String aboutContent = "";
-        if (Files.exists(aboutMdPath)) {
-            aboutContent = new String(Files.readAllBytes(aboutMdPath));
-        } else {
-            System.out.println("about.md not found in the input folder.");
-        }
+        String aboutContent = Files.exists(aboutMdPath) ? new String(Files.readAllBytes(aboutMdPath)) : "";
         Node aboutDocument = parser.parse(aboutContent);
         String aboutHtml = renderer.render(aboutDocument);
+        aboutHtml = applyLineNumbers(aboutHtml); // Apply line numbers to home page content as well
 
-        // Read and parse projects.md
+        // projects.md
         Path projectsMdPath = inputPath.resolve("projects.md");
-        String projectsContent = "";
-        if (Files.exists(projectsMdPath)) {
-            projectsContent = new String(Files.readAllBytes(projectsMdPath));
-        } else {
-            System.out.println("projects.md not found in the input folder.");
-        }
+        String projectsContent = Files.exists(projectsMdPath) ? new String(Files.readAllBytes(projectsMdPath)) : "";
+        List<Map<String, String>> projectLinks = parseTitleAndSummary(projectsContent);
 
-        // Parse projects.md to extract links and descriptions
-        List<Map<String, String>> projectLinks = new ArrayList<>();
-        Pattern linkPattern = Pattern.compile("\\[([^\\]]+)\\]\\(([^\\)]+)\\)(?::\\s*(.*))?");
-        Matcher matcher = linkPattern.matcher(projectsContent);
-        while (matcher.find()) {
-            String projectName = matcher.group(1);
-            String projectUrl = matcher.group(2);
-            String projectDescription = matcher.group(3) != null ? matcher.group(3) : "";
-            Map<String, String> projectData = new HashMap<>();
-            projectData.put("name", projectName);
-            projectData.put("url", projectUrl);
-            projectData.put("description", projectDescription);
-            projectLinks.add(projectData);
-        }
-
-        // Generate HTML list of projects with descriptions
         StringBuilder projectsHtmlBuilder = new StringBuilder();
-        projectsHtmlBuilder.append("<ul>\n");
-        for (Map<String, String> project : projectLinks) {
-            projectsHtmlBuilder.append("  <li><a href=\"")
+        for (int i = 0; i < projectLinks.size(); i++) {
+            Map<String, String> project = projectLinks.get(i);
+            projectsHtmlBuilder.append("<h3><a href=\"")
                     .append(project.get("url"))
                     .append("\" target=\"_blank\">")
-                    .append(project.get("name"))
-                    .append("</a>");
-            if (!project.get("description").isEmpty()) {
-                projectsHtmlBuilder.append(": ").append(project.get("description"));
+                    .append(project.get("title"))
+                    .append("</a></h3>\n");
+            if (!project.get("summary").isEmpty()) {
+                projectsHtmlBuilder.append("<p class=\"summary\">")
+                        .append(project.get("summary"))
+                        .append("</p>\n");
             }
-            projectsHtmlBuilder.append("</li>\n");
+            if (i < projectLinks.size() - 1) {
+                projectsHtmlBuilder.append("<hr>\n");
+            }
         }
-        projectsHtmlBuilder.append("</ul>");
-        String projectsLinksHtml = projectsHtmlBuilder.toString();
-
-        // Read the projects.html template
         String projectsHtmlTemplate = new String(Files.readAllBytes(templatePath.resolve("projects.html")));
-
-        // Replace {{projects}} placeholder in projects.html template
-        String projectsHtmlOutput = projectsHtmlTemplate.replace("{{projects}}", projectsLinksHtml);
-
-        // Write projects.html to the output directory
+        String projectsHtmlOutput = projectsHtmlTemplate.replace("{{projects}}", projectsHtmlBuilder.toString());
+        projectsHtmlOutput = applyLineNumbers(projectsHtmlOutput); // Apply line numbers to projects page
         Files.write(outputPath.resolve("projects.html"), projectsHtmlOutput.getBytes());
 
-        // Read and parse posts
+        // posts
         Path postsFolderPath = inputPath.resolve("posts");
         List<Map<String, String>> postsData = new ArrayList<>();
-
         if (Files.exists(postsFolderPath) && Files.isDirectory(postsFolderPath)) {
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(postsFolderPath, "*.md")) {
                 for (Path entry : stream) {
@@ -164,81 +122,93 @@ public class MongooseApplication implements CommandLineRunner {
                     String fileName = entry.getFileName().toString();
                     String baseName = fileName.substring(0, fileName.lastIndexOf('.'));
 
+                    String title = extractTitle(postContent);
+                    String summary = extractSummary(postContent);
+
+                    // Remove summary from body
+                    String filteredPostHtml = removeSummaryLineFromHtml(postHtml, summary);
+                    // We'll apply line numbers after we finalize the HTML for individual posts
+                    // Actually let's just do it now, then also do final line numbers after all replacements
+                    filteredPostHtml = applyLineNumbers(filteredPostHtml);
+
                     Map<String, String> postData = new HashMap<>();
                     postData.put("fileName", baseName + ".html");
-                    postData.put("htmlContent", postHtml);
-                    postData.put("title", extractTitle(postContent));
+                    postData.put("htmlContent", filteredPostHtml);
+                    postData.put("title", title);
+                    postData.put("summary", summary);
+
                     postsData.add(postData);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else {
-            System.out.println("posts directory not found or is not a directory.");
         }
 
-        // Read other HTML templates
         String indexHtmlTemplate = new String(Files.readAllBytes(templatePath.resolve("index.html")));
         String blogHtmlTemplate = new String(Files.readAllBytes(templatePath.resolve("blog.html")));
-
-        // Replace placeholders with content
         String indexHtmlOutput = indexHtmlTemplate.replace("{{content}}", aboutHtml);
+        indexHtmlOutput = applyLineNumbers(indexHtmlOutput); // line numbers on index page too if any code
 
-        // Generate posts links for blog.html
+        // blog listing
         StringBuilder postsLinksBuilder = new StringBuilder();
-        postsLinksBuilder.append("<ul>\n");
-        for (Map<String, String> postData : postsData) {
-            String postFileName = postData.get("fileName");
-            String postTitle = postData.get("title");
-
-            postsLinksBuilder.append("  <li><a href=\"posts/")
-                    .append(postFileName)
+        for (int i = 0; i < postsData.size(); i++) {
+            Map<String, String> pd = postsData.get(i);
+            postsLinksBuilder.append("<h3><a href=\"posts/")
+                    .append(pd.get("fileName"))
                     .append("\">")
-                    .append(postTitle)
-                    .append("</a></li>\n");
+                    .append(pd.get("title"))
+                    .append("</a></h3>\n");
+            if (!pd.get("summary").isEmpty()) {
+                postsLinksBuilder.append("<p class=\"summary\">")
+                        .append(pd.get("summary"))
+                        .append("</p>\n");
+            }
+            if (i < postsData.size() - 1) {
+                postsLinksBuilder.append("<hr>\n");
+            }
         }
-        postsLinksBuilder.append("</ul>");
-        String postsLinksHtml = postsLinksBuilder.toString();
-        String blogHtmlOutput = blogHtmlTemplate.replace("{{posts}}", postsLinksHtml);
 
-        // Write output files
+        String blogHtmlOutput = blogHtmlTemplate.replace("{{posts}}", postsLinksBuilder.toString());
+        blogHtmlOutput = applyLineNumbers(blogHtmlOutput); // line numbers on blog listing if code present
+
         Files.write(outputPath.resolve("index.html"), indexHtmlOutput.getBytes());
         Files.write(outputPath.resolve("blog.html"), blogHtmlOutput.getBytes());
 
-        // Copy static assets
         copyStaticAssets(templatePath, outputPath);
 
-        // Write individual post files
         Path outputPostsPath = outputPath.resolve("posts");
         Files.createDirectories(outputPostsPath);
 
-        // Keep track of all generated pages for sitemap
         List<String> pages = new ArrayList<>();
         pages.add("index.html");
         pages.add("projects.html");
         pages.add("blog.html");
 
+        // Individual post pages: summary in meta tags only
         for (Map<String, String> postData : postsData) {
             String postFileName = postData.get("fileName");
             String postHtmlContent = postData.get("htmlContent");
+            String postTitle = postData.get("title");
+            String postSummary = postData.get("summary");
 
-            // Read the post.html template
             String postTemplate = new String(Files.readAllBytes(templatePath.resolve("post.html")));
+            String postHtmlOutput = postTemplate
+                    .replace("{{content}}", postHtmlContent)
+                    .replace("{{title}}", postTitle)
+                    .replace("{{summary}}", postSummary);
 
-            String postHtmlOutput = postTemplate.replace("{{content}}", postHtmlContent)
-                    .replace("{{title}}", postData.get("title"));
+            // Ensure line numbers applied again (redundant but safe)
+            postHtmlOutput = applyLineNumbers(postHtmlOutput);
 
             Path postOutputPath = outputPostsPath.resolve(postFileName);
             Files.write(postOutputPath, postHtmlOutput.getBytes());
 
-            // Add each generated post file to pages list
             pages.add("posts/" + postFileName);
         }
 
-        // After generating all pages, create sitemap.xml using the given domain
         createSitemap(outputPath, pages, domainName);
 
-        System.out.println("Site generated successfully, including sitemap.xml and CNAME.");
+        System.out.println("Mongoose Site Generated.");
     }
 
     private String extractTitle(String markdownContent) {
@@ -253,13 +223,86 @@ public class MongooseApplication implements CommandLineRunner {
         return "Untitled";
     }
 
+    private String extractSummary(String markdownContent) {
+        try (Scanner scanner = new Scanner(markdownContent)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.startsWith("Summary:")) {
+                    return line.substring("Summary:".length()).trim();
+                }
+            }
+        }
+        return "";
+    }
+
+    private List<Map<String, String>> parseTitleAndSummary(String content) {
+        List<Map<String, String>> items = new ArrayList<>();
+        String[] lines = content.split("\n");
+
+        String currentTitle = null;
+        String currentUrl = null;
+        String currentSummary = "";
+
+        for (String line : lines) {
+            String trimmed = line.trim();
+            if (trimmed.startsWith("[") && trimmed.contains("](")) {
+                Matcher m = Pattern.compile("\\[([^\\]]+)\\]\\(([^)]+)\\)").matcher(trimmed);
+                if (m.find()) {
+                    currentTitle = m.group(1);
+                    currentUrl = m.group(2);
+                    currentSummary = "";
+                }
+            } else if (trimmed.startsWith("Summary:")) {
+                currentSummary = trimmed.substring("Summary:".length()).trim();
+                if (currentTitle != null && currentUrl != null) {
+                    Map<String, String> item = new HashMap<>();
+                    item.put("title", currentTitle);
+                    item.put("url", currentUrl);
+                    item.put("summary", currentSummary);
+                    items.add(item);
+
+                    currentTitle = null;
+                    currentUrl = null;
+                    currentSummary = "";
+                }
+            }
+        }
+
+        return items;
+    }
+
+    private String removeSummaryLineFromHtml(String postHtml, String summary) {
+        if (summary.isEmpty()) {
+            return postHtml;
+        }
+        return postHtml.replaceAll("<p>Summary:.*?</p>", "");
+    }
+
+    private String applyLineNumbers(String html) {
+        // Regex to find code blocks:
+        // <pre><code class="(language-[^"]+)">
+        // Replace with:
+        // <pre class=" line-numbers $1"><code class="$1 line-numbers $1">
+        Pattern p = Pattern.compile("<pre><code class=\"(language-[^\"]+)\">");
+        Matcher m = p.matcher(html);
+        StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            String langClass = m.group(1);
+            // Insert the exact older format
+            // The older snippet had a space before "line-numbers"
+            // We'll replicate that exactly:
+            // <pre class=" line-numbers language-XXX"><code class="language-XXX line-numbers language-XXX">
+            m.appendReplacement(sb, "<pre class=\" line-numbers " + langClass + "\"><code class=\"" + langClass + " line-numbers " + langClass + "\">");
+        }
+        m.appendTail(sb);
+        return sb.toString();
+    }
+
     private void copyStaticAssets(Path templatePath, Path outputPath) throws IOException {
-        // Copy styles.css
         Path sourceStylesPath = templatePath.resolve("styles.css");
         Path targetStylesPath = outputPath.resolve("styles.css");
         Files.copy(sourceStylesPath, targetStylesPath, StandardCopyOption.REPLACE_EXISTING);
 
-        // Copy asset directories
         String[] assetFolders = { "fonts", "images" };
         for (String folderName : assetFolders) {
             Path sourceFolder = templatePath.resolve(folderName);
@@ -305,16 +348,11 @@ public class MongooseApplication implements CommandLineRunner {
         Files.write(outputPath.resolve("sitemap.xml"), sitemap.toString().getBytes());
     }
 
-    // Define the custom attribute provider
     static class CustomAttributeProvider implements AttributeProvider {
         @Override
         public void setAttributes(Node node, AttributablePart part, MutableAttributes attributes) {
             if (node instanceof FencedCodeBlock) {
-                FencedCodeBlock codeBlock = (FencedCodeBlock) node;
-                // Existing class attribute
-                String existingClass = attributes.getValue("class");
-                if (existingClass == null) existingClass = "";
-                else existingClass += " ";
+                // no changes needed here
             }
         }
     }

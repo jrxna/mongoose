@@ -18,15 +18,35 @@
 
     <!-- Navigation Bar -->
     <nav class="navbar">
-        <a href="index.html">About</a>
-        <a href="blog.html">Blog</a>
-        <a href="projects.html">Projects</a>
+        <a href="index.html" class="navbar-link">
+            <svg width="120px" height="40px" viewBox="0 0 120 40" class="border">
+                <polyline points="120,0 120,40 0,40 0,0 120,0" class="bg-line" />
+                <polyline points="120,0 120,40 0,40 0,0 120,0" class="hl-line" />
+            </svg>
+            <span>Home</span>
+        </a>
+        <a href="blog.html" class="navbar-link">
+            <svg width="120px" height="40px" viewBox="0 0 120 40" class="border">
+                <polyline points="120,0 120,40 0,40 0,0 120,0" class="bg-line" />
+                <polyline points="120,0 120,40 0,40 0,0 120,0" class="hl-line" />
+            </svg>
+            <span>Blog</span>
+        </a>
+        <a href="projects.html" class="navbar-link">
+            <svg width="120px" height="40px" viewBox="0 0 120 40" class="border">
+                <polyline points="120,0 120,40 0,40 0,0 120,0" class="bg-line" />
+                <polyline points="120,0 120,40 0,40 0,0 120,0" class="hl-line" />
+            </svg>
+            <span>Projects</span>
+        </a>
     </nav>
 
     <!-- Blog Post List -->
     <main class="content">
         <section class="list">
+            <hr>
             {{posts}}
+            <hr>
         </section>
     </main>
 

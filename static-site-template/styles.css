@@ -10,7 +10,7 @@
 }
 
 html {
-    -webkit-text-size-adjust: 100%; 
+    -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
 }
 
@@ -24,7 +24,7 @@ html {
 
     /* Code styling vars */
     --code-bg-color: #2b2b2b;
-    --code-text-color: #a9b7c6; 
+    --code-text-color: #a9b7c6;
     --code-border-color: #3c3f41;
     --code-line-number-color: #858585;
     --code-copy-button-bg: #333333;
@@ -84,28 +84,46 @@ h6 {
     gap: calc(2 * var(--spacing-unit));
     padding: var(--spacing-unit) 0;
     flex-wrap: wrap;
-}
-
-/* Navigation buttons: no capitalization, slightly smaller text, no border-radius */
-.navbar a {
-    background-color: #0088FF;
-    color: #fff;
-    padding: calc(1 * var(--spacing-unit)) calc(2 * var(--spacing-unit));
-    font-weight: bold;
-    font-family: 'Selawik';
-    text-decoration: none;
-    display: inline-block;
-    transition: background-color 0.3s ease;
     font-size: 18px;
-    border: none;
-    vertical-align: middle; /* Ensure buttons align well with text */
 }
 
-.navbar a:hover {
-    background-color: #006acc;
+.navbar-link {
+  display: flex;
+  align-items: center;
+  background-color: #0088FF;
+  width: 120px;
+  height: 40px;
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+  transition: 1s ease-in-out;
 }
 
-/* Links: left-to-right blue background animation on hover 
+svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  fill: none;
+  stroke: #fff;
+  stroke-dasharray: 150 480;
+  stroke-dashoffset: 150;
+  transition: 1s ease-in-out;
+}
+
+.navbar-link:hover {
+  transition: 1s ease-in-out;
+  background: #0055DD;
+}
+
+.navbar-link:hover svg {
+  stroke-dashoffset: -480;
+}
+
+.navbar-link span {
+    padding-left: var(--spacing-unit);
+}
+
+/* Links: left-to-right blue background animation on hover
    Removed inline-block and used inline so links sit inline with text properly */
 a {
     position: relative;
@@ -253,35 +271,23 @@ pre {
     color: var(--code-text-color);
     border: 1px solid var(--code-border-color);
     border-radius: 5px;
-    position: relative; 
+    position: relative;
     overflow: auto;
     box-sizing: border-box;
 }
 
 pre code[class*="language-"] {
     font-family: 'Cascadia', monospace;
-    font-size: 16px !important; /* 2 counts smaller than 20px (body) => 16px */
+    font-size: 16px !important;
     display: inline-block;
     padding-right: calc(1 * var(--spacing-unit));
     box-sizing: border-box;
 }
 
+/* Line numbers styling */
 pre .line-numbers-rows {
     position: absolute;
     top: calc(1 * var(--spacing-unit));
     width: calc(5 * var(--spacing-unit)) !important;
     color: var(--code-line-number-color);
-    font-family: 'Cascadia', monospace;
-    font-size: 16px !important;
-    line-height: 1.5em !important;
-    user-select: none;
-    pointer-events: none;
-    text-align: right;
-    box-sizing: border-box;
 }
-
-pre .line-numbers-rows span {
-    display: block;
-    padding-right: calc(0.5 * var(--spacing-unit));
-}
-

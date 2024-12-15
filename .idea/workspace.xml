@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="310477af-370b-4fe2-8c91-8dd6ef1f4f98" name="Changes" comment="feat: make changes to the output static site template and add unversioned files&#10;&#10;- made changes in the default static site templates `styles.css` file&#10;- add background image object that is used in the `styles.css` file" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "jrxna"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "git@github.com:jrxna/mongoose.git",
+    "accountId": "60374eba-66a9-48a7-8bbb-c2835f788b5e"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 0
+}]]></component>
+  <component name="ProjectId" id="2qFLNhjnv5JoxGHHJKs8jWRsUAg" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "feat/sitemap",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/jrxna/github/mongoose"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="310477af-370b-4fe2-8c91-8dd6ef1f4f98" name="Changes" comment="" />
+      <created>1734253338978</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1734253338978</updated>
+    </task>
+    <task id="LOCAL-00001" summary="refactor: move project to intellij IDEA">
+      <option name="closed" value="true" />
+      <created>1734253483114</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1734253483114</updated>
+    </task>
+    <task id="LOCAL-00002" summary="feat: make changes to the output static site template and add unversioned files&#10;&#10;- made changes in the default static site templates `styles.css` file&#10;- add background image object that is used in the `styles.css` file">
+      <option name="closed" value="true" />
+      <created>1734255002440</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1734255002440</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="refactor: move project to intellij IDEA" />
+    <MESSAGE value="feat: make changes to the output static site template and add unversioned files&#10;&#10;- made changes in the default static site templates `styles.css` file&#10;- add background image object that is used in the `styles.css` file" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: make changes to the output static site template and add unversioned files&#10;&#10;- made changes in the default static site templates `styles.css` file&#10;- add background image object that is used in the `styles.css` file" />
+  </component>
+</project>

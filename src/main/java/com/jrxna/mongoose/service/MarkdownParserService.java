@@ -5,9 +5,10 @@ import com.jrxna.mongoose.model.TOCItem;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Document;
-import com.vladsch.flexmark.ext.gfm.tables.TablesExtension;
+import com.vladsch.flexmark.ext.tables.TablesExtension;
 import com.vladsch.flexmark.ext.autolink.AutolinkExtension;
 import com.vladsch.flexmark.util.data.MutableDataSet;
+import com.vladsch.flexmark.html.HtmlRenderer;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
@@ -30,9 +31,12 @@ public class MarkdownParserService {
     public MarkdownParserService() {
         MutableDataSet options = new MutableDataSet();
         options.set(Parser.EXTENSIONS, Arrays.asList(
-            TablesExtension.create(),
-            AutolinkExtension.create()
-        ));
+                TablesExtension.create(),
+                AutolinkExtension.create()));
+
+        // Enable heading anchor IDs
+        options.set(HtmlRenderer.GENERATE_HEADER_ID, true);
+        options.set(HtmlRenderer.RENDER_HEADER_ID, true);
 
         this.parser = Parser.builder(options).build();
         this.renderer = HtmlRenderer.builder(options).build();
@@ -41,35 +45,44 @@ public class MarkdownParserService {
 
     public void parseMarkdown(MarkdownFile file) throws IOException {
         String content = Files.readString(Paths.get(file.getFilePath()));
-        
+
+        // Extract frontmatter
         Map<String, Object> frontmatter = extractFrontmatter(content);
-        
+
+        // Set title and date from frontmatter or defaults
         if (frontmatter.containsKey("title")) {
             file.setTitle((String) frontmatter.get("title"));
         } else {
             file.setTitle(generateTitleFromFilename(file.getFilePath()));
         }
-        
+
         if (frontmatter.containsKey("date")) {
             file.setDate(parseDate((String) frontmatter.get("date")));
         } else {
             file.setDate(LocalDate.now());
         }
-        
+
+        // Remove frontmatter from content
         String markdownContent = removeFrontmatter(content);
+
+        // Remove first H1 title and Date line from content
+        markdownContent = removeHeaderAndDate(markdownContent);
+
         file.setContent(markdownContent);
-        
+
+        // Parse markdown to HTML
         Document document = parser.parse(markdownContent);
         String html = renderer.render(document);
         file.setHtmlContent(html);
-        
+
+        // Generate table of contents
         file.setTableOfContents(generateTOC(document));
     }
 
     private Map<String, Object> extractFrontmatter(String content) {
         Pattern pattern = Pattern.compile("^---\\s*\\n(.*?)\\n---\\s*\\n", Pattern.DOTALL);
         Matcher matcher = pattern.matcher(content);
-        
+
         if (matcher.find()) {
             String yamlContent = matcher.group(1);
             try {
@@ -78,7 +91,7 @@ public class MarkdownParserService {
                 System.err.println("Warning: Failed to parse frontmatter: " + e.getMessage());
             }
         }
-        
+
         return new HashMap<>();
     }
 
@@ -89,11 +102,11 @@ public class MarkdownParserService {
     private String generateTitleFromFilename(String filepath) {
         String filename = Paths.get(filepath).getFileName().toString();
         filename = filename.replace(".md", "");
-        
+
         return Arrays.stream(filename.split("[-_]"))
-            .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1))
-            .reduce((a, b) -> a + " " + b)
-            .orElse("Untitled");
+                .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1))
+                .reduce((a, b) -> a + " " + b)
+                .orElse("Untitled");
     }
 
     private LocalDate parseDate(String dateStr) {
@@ -106,12 +119,12 @@ public class MarkdownParserService {
 
     private List<TOCItem> generateTOC(Document document) {
         List<TOCItem> items = new ArrayList<>();
-        
+
         document.getDescendants().forEach(node -> {
             if (node instanceof com.vladsch.flexmark.ast.Heading) {
                 com.vladsch.flexmark.ast.Heading heading = (com.vladsch.flexmark.ast.Heading) node;
                 int level = heading.getLevel();
-                
+
                 if (level == 2 || level == 3) {
                     String text = heading.getText().toString();
                     String id = generateId(text);
@@ -119,13 +132,23 @@ public class MarkdownParserService {
                 }
             }
         });
-        
+
         return items;
     }
 
     private String generateId(String text) {
         return text.toLowerCase()
-            .replaceAll("[^a-z0-9\\s-]", "")
-            .replaceAll("\\s+", "-");
+                .replaceAll("[^a-z0-9\\s-]", "")
+                .replaceAll("\\s+", "-");
+    }
+
+    private String removeHeaderAndDate(String content) {
+        // Remove first H1 (# Title)
+        content = content.replaceFirst("^#\\s+.*?\\n", "");
+
+        // Remove Date line (Date: ...)
+        content = content.replaceFirst("^Date:\\s+.*?\\n\\n?", "");
+
+        return content.trim() + "\n";
     }
 }

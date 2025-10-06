@@ -4,8 +4,8 @@ public class SiteConfig {
     private String siteName = "JRXNA";
     private String domain = "jrxna.com";
     private String subdomain = "mongoose";
-    private String logoPath = "assets/images/JRXNALogoSmall.png";
-    private String faviconPath = "assets/images/JRXNAFavicon.png";
+    private String logoPath = "assets/images/Logo.png";
+    private String faviconPath = "assets/images/Favicon.png";
     
     public String getSiteName() { return siteName; }
     public void setSiteName(String siteName) { this.siteName = siteName; }

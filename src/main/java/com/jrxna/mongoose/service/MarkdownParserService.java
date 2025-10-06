@@ -143,12 +143,16 @@ public class MarkdownParserService {
     }
 
     private String removeHeaderAndDate(String content) {
-        // Remove first H1 (# Title)
-        content = content.replaceFirst("^#\\s+.*?\\n", "");
+        // Remove first H1 (# Title) and any following whitespace
+        content = content.replaceFirst("^#\\s+.*?\\n+", "");
+
+        // Remove any leading whitespace
+        content = content.trim();
 
         // Remove Date line (Date: ...)
-        content = content.replaceFirst("^Date:\\s+.*?\\n\\n?", "");
+        content = content.replaceFirst("^Date:\\s*.*?\\n+", "");
 
+        // Remove any remaining leading whitespace
         return content.trim() + "\n";
     }
 }

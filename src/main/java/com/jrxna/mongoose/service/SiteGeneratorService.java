@@ -172,16 +172,16 @@ public class SiteGeneratorService {
         Files.createDirectories(assetsDir);
 
         // Copy logo and favicon from resources
-        try (var logoStream = getClass().getResourceAsStream("/assets/images/JRXNALogoSmall.png")) {
+        try (var logoStream = getClass().getResourceAsStream("/assets/images/Logo.png")) {
             if (logoStream != null) {
-                Files.copy(logoStream, assetsDir.resolve("JRXNALogoSmall.png"),
+                Files.copy(logoStream, assetsDir.resolve("Logo.png"),
                         StandardCopyOption.REPLACE_EXISTING);
             }
         }
 
-        try (var faviconStream = getClass().getResourceAsStream("/assets/images/JRXNAFavicon.png")) {
+        try (var faviconStream = getClass().getResourceAsStream("/assets/images/Favicon.png")) {
             if (faviconStream != null) {
-                Files.copy(faviconStream, assetsDir.resolve("JRXNAFavicon.png"),
+                Files.copy(faviconStream, assetsDir.resolve("Favicon.png"),
                         StandardCopyOption.REPLACE_EXISTING);
             }
         }
